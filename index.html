@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TaskFlow - Modern TODO App">
+    <title>TaskFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="todo.css">
+</head>
+<body>
+
+    <!-- ===================== HEADER ===================== -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="brand">
+                <div class="brand-icon">✓</div>
+                <div>
+                    <h1 class="brand-name">TaskFlow</h1>
+                    <p class="brand-sub">Stay organized, stay ahead</p>
+                </div>
+            </div>
+
+            <div class="header-stats">
+                <div class="stat-pill">
+                    <span class="stat-num" id="totalTodos">0</span>
+                    <span class="stat-lbl">Total</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-pill">
+                    <span class="stat-num accent-blue" id="activeTodos">0</span>
+                    <span class="stat-lbl">Active</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-pill">
+                    <span class="stat-num accent-green" id="completedTodos">0</span>
+                    <span class="stat-lbl">Done</span>
+                </div>
+            </div>
+
+            <button class="btn-create" onclick="app.openCreateModal()">
+                <span class="btn-create-icon">+</span>
+                Create Task
+            </button>
+        </div>
+    </header>
+
+    <!-- ===================== MAIN ===================== -->
+    <main class="main">
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="search-wrap">
+                <span class="search-icon">⌕</span>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search tasks..."
+                    class="search-input"
+                    oninput="app.filterTodos()"
+                >
+            </div>
+
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all" onclick="app.filterByStatus('all', this)">All</button>
+                <button class="filter-tab" data-filter="active" onclick="app.filterByStatus('active', this)">Active</button>
+                <button class="filter-tab" data-filter="completed" onclick="app.filterByStatus('completed', this)">Completed</button>
+            </div>
+
+            <div class="filter-selects">
+                <select id="priorityFilter" class="filter-select" onchange="app.filterTodos()">
+                    <option value="">All Priorities</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <select id="sortSelect" class="filter-select" onchange="app.sortTodos(this.value)">
+                    <option value="created">Newest First</option>
+                    <option value="date">By Deadline</option>
+                    <option value="priority">By Priority</option>
+                    <option value="name">By Name</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Task Table -->
+        <div class="task-table-wrap">
+            <!-- Column Headers -->
+            <div class="task-header-row">
+                <div class="col-name">Task Name</div>
+                <div class="col-priority">Priority</div>
+                <div class="col-deadline">Deadline</div>
+                <div class="col-desc">Description</div>
+                <div class="col-status">Status</div>
+                <div class="col-actions">Actions</div>
+            </div>
+
+            <!-- Task Rows -->
+            <div id="todosList" class="task-list">
+                <div class="empty-state">
+                    <div class="empty-icon">🎯</div>
+                    <h3>No tasks yet</h3>
+                    <p>Click <strong>Create Task</strong> to get started</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ===================== TASK MODAL ===================== -->
+    <div id="modalOverlay" class="modal-overlay" onclick="app.closeModal()"></div>
+
+    <div id="taskModal" class="modal">
+        <div class="modal-header">
+            <h2 id="modalHeading">✨ New Task</h2>
+            <button class="modal-close-btn" onclick="app.closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Title <span class="required">*</span></label>
+                <input type="text" id="modalTitleInput" class="form-input" placeholder="What needs to be done?">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea id="modalDesc" class="form-input form-textarea" rows="3" placeholder="Add more details..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label class="form-label">Due Date</label>
+                    <input type="date" id="modalDueDate" class="form-input">
+                </div>
+                <div class="form-group flex-1">
+                    <label class="form-label">Priority</label>
+                    <select id="modalPriority" class="form-input">
+                        <option value="low">🟢 Low</option>
+                        <option value="medium" selected>🟡 Medium</option>
+                        <option value="high">🔴 High</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label class="form-label">Category</label>
+                    <input type="text" id="modalCategory" class="form-input" placeholder="Work, Personal, etc.">
+                </div>
+                <div class="form-group flex-1">
+                    <label class="form-label">Status</label>
+                    <select id="modalStatus" class="form-input">
+                        <option value="pending">⏳ Pending</option>
+                        <option value="completed">✅ Completed</option>
+                        <option value="extended">📅 Extended Deadline</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="app.closeModal()">Cancel</button>
+            <button class="btn btn-save" onclick="app.saveModal()">
+                <span id="modalSaveBtnText">➕ Create Task</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===================== INLINE DROPDOWN ===================== -->
+    <div id="inlineDropdown" class="inline-dropdown"></div>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <p class="footer-copy">TaskFlow · Built with WebDB.js</p>
+            <div class="footer-actions">
+                <button class="btn btn-ghost btn-sm" onclick="app.exportData()">↑ Export</button>
+                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">↓ Import</button>
+                <input type="file" id="importFile" accept=".json" style="display:none;" onchange="app.importData(event)">
+                <button class="btn btn-ghost btn-sm danger" onclick="app.clearCompleted()">⌫ Clear Done</button>
+            </div>
+        </div>
+    </footer>
+
+    <script src="webdb.js"></script>
+    <script src="todo.js"></script>
+</body>
+</html>

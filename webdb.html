@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebDB Manager Pro - IndexedDB Management Tool">
+    <title>WebDB Manager Pro</title>
+    
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="webdb.css">
+</head>
+<body>
+
+    <!-- ========================================= -->
+    <!-- SIDEBAR 1: DATABASE LIST -->
+    <!-- ========================================= -->
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <h3>WebDB</h3>
+            <button class="btn btn-outline" onclick="createNewDB()" title="Create new database">+</button>
+        </div>
+        <div id="db-list"></div>
+        
+        <!-- Single Database Backup -->
+        <div style="border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+            <p style="margin: 5px 0; font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Current Database</p>
+            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                <button class="btn btn-outline" style="flex:1; font-size: 11px;" onclick="handleDBExport()" title="Backup current database">📥 Backup</button>
+                <button class="btn btn-outline" style="flex:1; font-size: 11px;" onclick="document.getElementById('importFile').click()" title="Restore single database">📤 Import</button>
+                <input type="file" id="importFile" accept=".json" style="display:none;">
+            </div>
+        </div>
+        
+        <!-- All Databases Backup -->
+        <div style="border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;">
+            <p style="margin: 5px 0; font-size: 11px; color: var(--text-muted); text-transform: uppercase;">All Databases</p>
+            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                <button class="btn btn-primary" style="flex:1; font-size: 11px;" onclick="handleAllDBsExport()" title="Backup all databases to one file">💾 Backup All</button>
+                <button class="btn btn-primary" style="flex:1; font-size: 11px;" onclick="document.getElementById('importAllFile').click()" title="Restore all databases from backup">📂 Import All</button>
+                <input type="file" id="importAllFile" accept=".json" style="display:none;" onchange="handleAllDBsImport(event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- SIDEBAR 2: DIRECTORY/TREE VIEW -->
+    <!-- ========================================= -->
+    <div id="sidebar2">
+        <div class="sidebar-header2">
+            <h3 style="margin: 0; font-size: 14px;">📁 Files</h3>
+            <button class="btn btn-outline" style="padding: 4px 8px; font-size: 12px;" onclick="createFolder()">+</button>
+        </div>
+        <div id="dir-list">
+            <div id="tree"></div>
+        </div>
+        <div style="display: flex; gap: 5px; margin-top: 5px;">
+            <button class="btn btn-outline" style="flex:1; font-size: 11px;" onclick="createNewFile()">New File</button>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- MAIN CONTENT AREA -->
+    <!-- ========================================= -->
+    <div id="main">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <input type="text" id="search-input" placeholder="🔍 Search files by name...">
+            <button class="btn btn-primary" onclick="createNewFile()">+ New File</button>
+            <button class="btn btn-primary" onclick="createFolder()">+ Folder</button>
+        </div>
+
+        <!-- File Table Container -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>📄 Filename</th>
+                        <th>Type</th>
+                        <th>Size</th>
+                        <th>Created</th>
+                        <th>Modified</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="file-table">
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                            Select a database to view files
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- CONTEXT MENU -->
+    <!-- ========================================= -->
+    <div id="menu" class="context-menu"></div>
+
+    <!-- ========================================= -->
+    <!-- EDITOR MODAL -->
+    <!-- ========================================= -->
+    <div id="modal-overlay" class="overlay"></div>
+    <div id="edit-modal" class="modal">
+        <div class="modal-header">
+            <h2 id="modal-title">Edit File</h2>
+            <button class="btn btn-outline" onclick="closeModal()" title="Close editor">✕</button>
+        </div>
+        <div class="modal-body">
+            <textarea 
+                id="modal-content" 
+                placeholder="File content goes here..."
+                spellcheck="false">
+            </textarea>
+        </div>
+        <div class="modal-footer">
+            <span id="change-indicator">● Unsaved changes</span>
+            <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" id="save-file-btn" onclick="handleSave()">💾 Save</button>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- SCRIPTS -->
+    <!-- ========================================= -->
+    <script src="webdb.js"></script>
+
+</body>
+</html>
